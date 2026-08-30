@@ -32,6 +32,8 @@ Purpose:
 #pragma once
 
 #include "../core/Component.h"
+#include "../core/Constants.h"
+#include <cmath>
 
 class Compressor : public Component
 {
@@ -49,12 +51,14 @@ class Compressor : public Component
 
     void solve(
         const Station& inlet,
-        Station& outlet) override
+        Station& outlet)
         {
             outlet.pressure = inlet.pressure * pressureRatio;
 
-            outlet.temperature = inlet.temperature * (1.0 + (pressureRatio - 1.0) / efficiency); // Placeholder
-
+            outlet.temperature = inlet.temperature *
+                (1.0 + (pow(pressureRatio,
+                (Constants::gamma - 1.0) / Constants::gamma) - 1.0)
+                / efficiency);
             outlet.massFlow = inlet.massFlow;
         }
 };
