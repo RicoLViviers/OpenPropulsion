@@ -64,16 +64,7 @@ public:
         const Station& inlet,
         Station& outlet) override
     {
-        // ------------------------------------------
-        // 1. Pass mass flow through unchanged
-        // ------------------------------------------
-
         outlet.massFlow = inlet.massFlow;
-
-
-        // ------------------------------------------
-        // 2. Check whether the nozzle can expand
-        // ------------------------------------------
 
         if (inlet.pressure <= ambientPressure)
         {
@@ -83,11 +74,6 @@ public:
 
             return;
         }
-
-
-        // ------------------------------------------
-        // 3. Calculate ideal exit temperature
-        // ------------------------------------------
 
         double pressureRatio =
             ambientPressure / inlet.pressure;
@@ -99,14 +85,6 @@ public:
                 (Constants::gamma - 1.0) / Constants::gamma
             );
 
-
-        // ------------------------------------------
-        // 4. Account for nozzle efficiency
-        //
-        // eta_n = (T_in - T_actual) /
-        //         (T_in - T_ideal)
-        // ------------------------------------------
-
         double actualExitTemperature =
             inlet.temperature -
             efficiency *
@@ -115,11 +93,6 @@ public:
 
         outlet.temperature = actualExitTemperature;
 
-
-        // ------------------------------------------
-        // 5. Calculate exit velocity
-        // ------------------------------------------
-
         outlet.velocity =
             std::sqrt(
                 2.0 *
@@ -127,14 +100,6 @@ public:
                 (inlet.temperature -
                  actualExitTemperature)
             );
-
-
-        // ------------------------------------------
-        // 6. Set exit pressure
-        //
-        // For a simple perfectly expanded nozzle,
-        // assume exit pressure equals ambient.
-        // ------------------------------------------
 
         outlet.pressure = ambientPressure;
     }
