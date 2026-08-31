@@ -1,6 +1,7 @@
-#include "imgui.h"
+/* #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 
@@ -14,6 +15,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    std::cout << "Hello world" << std::endl;
 
     GLFWwindow* window = glfwCreateWindow(
         1280,
@@ -79,4 +82,4 @@ int main()
     glfwTerminate();
 
     return 0;
-}
+} */

@@ -62,3 +62,12 @@ int main()
     return 0;
 };
  */
+
+
+#include "app/Application.h"
+
+int main()
+{
+    Application app;
+    return app.Run();
+}

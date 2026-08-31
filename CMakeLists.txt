@@ -4,6 +4,7 @@ project(OpenPropulsion LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ============================================================
 # GLFW
@@ -37,7 +38,9 @@ find_package(OpenGL REQUIRED)
 
 set(SOURCES
     src/main.cpp
-    src/test.cpp
+    src/app/Application.cpp
+    src/gui/GUI.cpp
+    src/simulation/Simulation.cpp
 
     # Dear ImGui
     external/imgui/imgui.cpp
