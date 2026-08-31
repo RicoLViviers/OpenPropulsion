@@ -1,4 +1,4 @@
-#include <iostream>
+/* #include <iostream>
 #include "./core/Station.h"
 #include "./components/Inlet.h"
 #include "./components/Compressor.h"
@@ -6,6 +6,7 @@
 #include "./components/Turbine.h"
 #include "./components/Nozzle.h"
 #include "./core/Atmosphere.h"
+
 using namespace std;
 
 int main()
@@ -54,6 +55,10 @@ int main()
     cout << "Nozzle pres out: " << s5.pressure << endl;
     cout << "Velocity out: " << s5.velocity << endl;
 
+    string m = "asd";
+    cin >> m;
+
 
     return 0;
 };
+ */
