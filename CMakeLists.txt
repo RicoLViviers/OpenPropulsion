@@ -6,10 +6,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# ============================================================
-# GLFW
-# ============================================================
-
 include(FetchContent)
 
 FetchContent_Declare(
@@ -19,22 +15,14 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 
-# Disable unnecessary GLFW components
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(glfw)
 
-# ============================================================
-# OpenGL
-# ============================================================
 
 find_package(OpenGL REQUIRED)
-
-# ============================================================
-# Source files
-# ============================================================
 
 set(SOURCES
     src/main.cpp
@@ -43,40 +31,31 @@ set(SOURCES
     src/simulation/Simulation.cpp
     src/performance/Performance.cpp
 
-    # Dear ImGui
     external/imgui/imgui.cpp
     external/imgui/imgui_draw.cpp
     external/imgui/imgui_widgets.cpp
     external/imgui/imgui_tables.cpp
     external/imgui/imgui_demo.cpp
 
-    # ImGui backends
     external/imgui/backends/imgui_impl_glfw.cpp
     external/imgui/backends/imgui_impl_opengl3.cpp
+
+
+    external/implot/implot.cpp
+    external/implot/implot_items.cpp
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets
      DESTINATION ${CMAKE_BINARY_DIR})
 
-# ============================================================
-# Executable
-# ============================================================
-
 add_executable(${PROJECT_NAME} ${SOURCES})
-
-# ============================================================
-# Include directories
-# ============================================================
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     src
     external/imgui
     external/imgui/backends
+    external/implot
 )
-
-# ============================================================
-# Libraries
-# ============================================================
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw

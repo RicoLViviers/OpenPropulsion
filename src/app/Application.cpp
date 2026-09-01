@@ -6,6 +6,8 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include "implot.h"
+
 #include <GLFW/glfw3.h>
 
 Application::Application() : m_simulation(0, 0.0, 0.0)
@@ -66,6 +68,8 @@ bool Application::Initialize()
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
+
+    ImPlot::CreateContext();
 
     //ImGui::StyleColorsDark();
 

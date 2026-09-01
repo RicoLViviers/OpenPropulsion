@@ -3,6 +3,7 @@
 #include "iostream"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "implot.h"
 
 GUI::GUI(Simulation& simulation) : m_simulation(simulation)
 {
@@ -30,6 +31,8 @@ GUI::GUI(Simulation& simulation) : m_simulation(simulation)
 
 GUI::~GUI()
 {
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
 }
 
 void GUI::Draw()
@@ -233,6 +236,26 @@ void GUI::DrawAnalysis()
     );
 
     // Draw your analysis content here
+    float x[] = {0, 1, 2, 3, 4};
+    float temperature[] = {
+        288.15f,
+        288.15f,
+        582.0f,
+        1400.0f,
+        900.0f
+    };
+
+    if (ImPlot::BeginPlot("Temperature"))
+    {
+        ImPlot::PlotLine(
+            "Temperature",
+            x,
+            temperature,
+            5
+        );
+
+        ImPlot::EndPlot();
+    }
 
     ImGui::End();
 }
