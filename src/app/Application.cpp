@@ -36,9 +36,6 @@ int Application::Run()
 
 bool Application::Initialize()
 {
-    // --------------------------------------------------------
-    // GLFW
-    // --------------------------------------------------------
 
     if (!glfwInit())
         return false;
@@ -64,31 +61,19 @@ bool Application::Initialize()
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1);
 
-    // --------------------------------------------------------
-    // Dear ImGui
-    // --------------------------------------------------------
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
 
-    ImGui::StyleColorsLight();
-
-    // --------------------------------------------------------
-    // ImGui backends
-    // --------------------------------------------------------
+    //ImGui::StyleColorsDark();
 
     if (!ImGui_ImplGlfw_InitForOpenGL(m_window, true))
         return false;
 
     if (!ImGui_ImplOpenGL3_Init("#version 330"))
         return false;
-
-    // --------------------------------------------------------
-    // GUI
-    // --------------------------------------------------------
 
     m_gui = new GUI(m_simulation);
 
@@ -123,13 +108,6 @@ void Application::EndFrame()
         0,
         displayWidth,
         displayHeight
-    );
-
-    glClearColor(
-        0.95f,
-        0.95f,
-        0.95f,
-        1.0f
     );
 
     glClear(GL_COLOR_BUFFER_BIT);

@@ -1,5 +1,6 @@
 #pragma once
-
+#include "imgui.h"
+#include "./simulation/Simulation.h"
 class Simulation;
 class GUI
 {
@@ -23,13 +24,12 @@ private:
 
     void DrawMenuBar();
     void DrawSidebar();
-    void DrawMainContent();
-    void DrawStatusBar();
-
-    void DrawDashboard();
-    void DrawEngine();
-    void DrawAnalysis();
+    void DrawViewport();
     void DrawResults();
+    void DrawAnalysis();
 
-    Page m_currentPage = Page::Dashboard;
+    ImFont* m_interRegular = nullptr;
+    ImFont* m_interMedium = nullptr;
+    ImFont* m_interSemiBold = nullptr;
+
 };

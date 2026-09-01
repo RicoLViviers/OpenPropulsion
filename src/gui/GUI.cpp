@@ -1,9 +1,31 @@
 #include "GUI.h"
 
+#include "iostream"
 #include "imgui.h"
+#include "imgui_internal.h"
 
 GUI::GUI(Simulation& simulation) : m_simulation(simulation)
 {
+    ImGuiIO& io = ImGui::GetIO();
+
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    m_interRegular = io.Fonts->AddFontFromFileTTF(
+        "assets/fonts/Inter_18pt-Regular.ttf",
+        16.0f
+    );
+
+    m_interMedium = io.Fonts->AddFontFromFileTTF(
+        "assets/fonts/Inter_18pt-Medium.ttf",
+        16.0f
+    );
+
+    m_interSemiBold = io.Fonts->AddFontFromFileTTF(
+        "assets/fonts/Inter_18pt-SemiBold.ttf",
+        16.0f
+    );
+
+    io.FontDefault = m_interRegular;
 }
 
 GUI::~GUI()
@@ -13,9 +35,84 @@ GUI::~GUI()
 void GUI::Draw()
 {
     DrawMenuBar();
+
+    ImGuiID dockspace_id = ImGui::GetID("OpenPropulsionDockSpace");
+
+    ImGui::DockSpaceOverViewport(
+        dockspace_id,
+        nullptr,
+        ImGuiDockNodeFlags_PassthruCentralNode
+    );
+
+    static bool firstTime = true;
+
+    if (firstTime)
+    {
+        firstTime = false;
+
+        ImGui::DockBuilderRemoveNode(dockspace_id);
+
+        ImGui::DockBuilderAddNode(
+            dockspace_id,
+            ImGuiDockNodeFlags_DockSpace
+        );
+
+        ImGui::DockBuilderSetNodeSize(
+            dockspace_id,
+            ImGui::GetMainViewport()->WorkSize
+        );
+
+        ImGuiID left;
+        ImGuiID centre;
+        ImGuiID right;
+        ImGuiID centreTop;
+        ImGuiID centreBottom;
+
+        // Split off the left sidebar
+        ImGui::DockBuilderSplitNode(
+            dockspace_id,
+            ImGuiDir_Left,
+            0.20f,
+            &left,
+            &centre
+        );
+
+        // Split off the right analysis panel
+        ImGui::DockBuilderSplitNode(
+            centre,
+            ImGuiDir_Right,
+            0.20f,
+            &right,
+            &centre
+        );
+
+        // Split the centre into viewport and results
+        ImGui::DockBuilderSplitNode(
+            centre,
+            ImGuiDir_Down,
+            0.30f,
+            &centreBottom,
+            &centreTop
+        );
+
+        ImGui::DockBuilderGetNode(left)->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+        ImGui::DockBuilderGetNode(centreTop)->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+        ImGui::DockBuilderGetNode(centreBottom)->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+        ImGui::DockBuilderGetNode(right)->LocalFlags |= ImGuiDockNodeFlags_NoTabBar;
+
+        // Dock each window into its node
+        ImGui::DockBuilderDockWindow("Sidebar", left);
+        ImGui::DockBuilderDockWindow("Viewport", centreTop);
+        ImGui::DockBuilderDockWindow("Results", centreBottom);
+        ImGui::DockBuilderDockWindow("Analysis", right);
+
+        ImGui::DockBuilderFinish(dockspace_id);
+    }
+
     DrawSidebar();
-    DrawMainContent();
-    DrawStatusBar();
+    DrawViewport();
+    DrawResults();
+    DrawAnalysis();
 }
 
 void GUI::DrawMenuBar()
@@ -32,7 +129,6 @@ void GUI::DrawMenuBar()
 
             if (ImGui::MenuItem("Exit"))
             {
-                // We will handle application shutdown later.
             }
 
             ImGui::EndMenu();
@@ -71,327 +167,50 @@ void GUI::DrawMenuBar()
 
 void GUI::DrawSidebar()
 {
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-    const float menuBarHeight = ImGui::GetFrameHeight();
-    const float statusBarHeight = 28.0f;
-    const float sidebarWidth = 220.0f;
-
-    ImGui::SetNextWindowPos(
-        ImVec2(viewport->Pos.x, viewport->Pos.y + menuBarHeight)
+    ImGui::Begin(
+        "Sidebar",
+        nullptr,
+        ImGuiWindowFlags_NoCollapse
     );
-
-    ImGui::SetNextWindowSize(
-        ImVec2(
-            sidebarWidth,
-            viewport->Size.y - menuBarHeight - statusBarHeight
-        )
-    );
-
-    ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoCollapse;
-
-    ImGui::Begin("Sidebar", nullptr, flags);
-
-    ImGui::Spacing();
-
-    ImGui::Text("OPENPROPULSION");
-
-    ImGui::Separator();
-
-    ImGui::Spacing();
-
-    if (ImGui::Selectable(
-        "Dashboard",
-        m_currentPage == Page::Dashboard
-    ))
-    {
-        m_currentPage = Page::Dashboard;
-    }
-
-    if (ImGui::Selectable(
-        "Engine",
-        m_currentPage == Page::Engine
-    ))
-    {
-        m_currentPage = Page::Engine;
-    }
-
-    if (ImGui::Selectable(
-        "Analysis",
-        m_currentPage == Page::Analysis
-    ))
-    {
-        m_currentPage = Page::Analysis;
-    }
-
-    if (ImGui::Selectable(
-        "Results",
-        m_currentPage == Page::Results
-    ))
-    {
-        m_currentPage = Page::Results;
-    }
 
     ImGui::End();
 }
 
-
-void GUI::DrawMainContent()
+void GUI::DrawViewport()
 {
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-    const float menuBarHeight = ImGui::GetFrameHeight();
-    const float statusBarHeight = 28.0f;
-    const float sidebarWidth = 220.0f;
-
-    ImGui::SetNextWindowPos(
-        ImVec2(
-            viewport->Pos.x + sidebarWidth,
-            viewport->Pos.y + menuBarHeight
-        )
+    ImGui::Begin(
+        "Viewport",
+        nullptr,
+        ImGuiWindowFlags_NoCollapse
     );
 
-    ImGui::SetNextWindowSize(
-        ImVec2(
-            viewport->Size.x - sidebarWidth,
-            viewport->Size.y - menuBarHeight - statusBarHeight
-        )
-    );
-
-    ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoCollapse;
-
-    ImGui::Begin("Main Content", nullptr, flags);
-
-    switch (m_currentPage)
-    {
-        case Page::Dashboard:
-            DrawDashboard();
-            break;
-
-        case Page::Engine:
-            DrawEngine();
-            break;
-
-        case Page::Analysis:
-            DrawAnalysis();
-            break;
-
-        case Page::Results:
-            DrawResults();
-            break;
-    }
+    // Draw your viewport content here
 
     ImGui::End();
-}
-
-
-void GUI::DrawDashboard()
-{
-    ImGui::Text("Dashboard");
-
-    ImGui::Separator();
-
-    ImGui::Spacing();
-
-    ImGui::Text("Welcome to OpenPropulsion.");
-    ImGui::Text(
-        "Gas turbine and propulsion performance analysis."
-    );
-
-    ImGui::Spacing();
-    ImGui::Spacing();
-
-    if (ImGui::Button("New Engine", ImVec2(150, 40)))
-    {
-        m_currentPage = Page::Engine;
-    }
-
-    ImGui::SameLine();
-
-    if (ImGui::Button("Open Analysis", ImVec2(150, 40)))
-    {
-        m_currentPage = Page::Analysis;
-    }
-
-    ImGui::Spacing();
-    ImGui::Spacing();
-
-    ImGui::Text("Project Status");
-
-    ImGui::Separator();
-
-    ImGui::BulletText("Engine: Not configured");
-    ImGui::BulletText("Simulation: Ready");
-    ImGui::BulletText("Results: No data");
-}
-
-void GUI::DrawEngine()
-{
-    ImGui::Text("Engine Configuration");
-
-    ImGui::Separator();
-
-    ImGui::Spacing();
-
-    static float pressureRatio = 10.0f;
-    static float massFlow = 5.0f;
-    static float turbineInletTemperature = 1200.0f;
-
-    ImGui::Text("Compressor");
-
-    ImGui::SliderFloat(
-        "Pressure Ratio",
-        &pressureRatio,
-        1.0f,
-        50.0f
-    );
-
-    ImGui::Spacing();
-
-    ImGui::Text("Mass Flow");
-
-    ImGui::SliderFloat(
-        "Mass Flow (kg/s)",
-        &massFlow,
-        0.1f,
-        100.0f
-    );
-
-    ImGui::Spacing();
-
-    ImGui::Text("Combustor");
-
-    ImGui::SliderFloat(
-        "Turbine Inlet Temperature (K)",
-        &turbineInletTemperature,
-        500.0f,
-        2000.0f
-    );
-
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
-    if (ImGui::Button("Run Simulation", ImVec2(160, 40)))
-    {
-        m_currentPage = Page::Results;
-    }
-}
-
-void GUI::DrawAnalysis()
-{
-    ImGui::Text("Performance Analysis");
-
-    ImGui::Separator();
-
-    ImGui::Spacing();
-
-    ImGui::Text("Performance Charts");
-
-    ImGui::BeginChild(
-        "ChartArea",
-        ImVec2(0, 300),
-        true
-    );
-
-    ImGui::Text(
-        "Charts will be implemented here."
-    );
-
-    ImGui::EndChild();
-
-    ImGui::Spacing();
-
-    ImGui::Text("Analysis Parameters");
-
-    ImGui::BulletText("Pressure ratio");
-    ImGui::BulletText("Mass flow");
-    ImGui::BulletText("Temperature");
-    ImGui::BulletText("Thrust");
 }
 
 void GUI::DrawResults()
 {
-    ImGui::Text("Simulation Results");
+    ImGui::Begin(
+        "Results",
+        nullptr,
+        ImGuiWindowFlags_NoCollapse
+    );
 
-    ImGui::Separator();
+    // Draw your results content here
 
-    ImGui::Spacing();
-
-    ImGui::Text("Engine Performance");
-
-    ImGui::Separator();
-
-    ImGui::Text("Thrust:");
-    ImGui::SameLine(250);
-    ImGui::Text("0.00 N");
-
-    ImGui::Text("Specific Fuel Consumption:");
-    ImGui::SameLine(250);
-    ImGui::Text("0.000 kg/N/s");
-
-    ImGui::Text("Overall Pressure Ratio:");
-    ImGui::SameLine(250);
-    ImGui::Text("0.00");
-
-    ImGui::Text("Thermal Efficiency:");
-    ImGui::SameLine(250);
-    ImGui::Text("0.00 %%");
-
-    ImGui::Spacing();
-    ImGui::Spacing();
-
-    if (ImGui::Button("Back to Engine"))
-    {
-        m_currentPage = Page::Engine;
-    }
+    ImGui::End();
 }
 
-void GUI::DrawStatusBar()
+void GUI::DrawAnalysis()
 {
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-    const float statusBarHeight = 28.0f;
-
-    ImGui::SetNextWindowPos(
-        ImVec2(
-            viewport->Pos.x,
-            viewport->Pos.y + viewport->Size.y - statusBarHeight
-        )
+    ImGui::Begin(
+        "Analysis",
+        nullptr,
+        ImGuiWindowFlags_NoCollapse
     );
 
-    ImGui::SetNextWindowSize(
-        ImVec2(
-            viewport->Size.x,
-            statusBarHeight
-        )
-    );
-
-    ImGuiWindowFlags flags =
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoCollapse;
-
-    ImGui::Begin("Status Bar", nullptr, flags);
-
-    ImGui::Text("Ready");
-
-    ImGui::SameLine();
-
-    ImGui::SetCursorPosX(
-        ImGui::GetWindowWidth() - 150.0f
-    );
-
-    ImGui::Text("OpenPropulsion");
+    // Draw your analysis content here
 
     ImGui::End();
 }

@@ -54,6 +54,9 @@ set(SOURCES
     external/imgui/backends/imgui_impl_opengl3.cpp
 )
 
+file(COPY ${CMAKE_SOURCE_DIR}/assets
+     DESTINATION ${CMAKE_BINARY_DIR})
+
 # ============================================================
 # Executable
 # ============================================================

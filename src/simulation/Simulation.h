@@ -17,12 +17,12 @@ public:
     void Run();
 
     // Results
-    const Station& GetS0() const { return s0; }
-    const Station& GetS1() const { return s1; }
-    const Station& GetS2() const { return s2; }
-    const Station& GetS3() const { return s3; }
-    const Station& GetS4() const { return s4; }
-    const Station& GetS5() const { return s5; }
+    Station& GetS0() { return s0; }
+    Station& GetS1() { return s1; }
+    Station& GetS2() { return s2; }
+    Station& GetS3() { return s3; }
+    Station& GetS4() { return s4; }
+    Station& GetS5() { return s5; }
 
 private:
     Station s0;
