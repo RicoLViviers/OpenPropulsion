@@ -12,17 +12,34 @@
 class Simulation
 {
 public:
-    Simulation();
+    int altitude;
+    float mach;
+    int throttle;
+    Simulation(int altitude, float mach, int throttle);
 
     void Run();
 
-    // Results
+    // Getters for stations
     Station& GetS0() { return s0; }
     Station& GetS1() { return s1; }
     Station& GetS2() { return s2; }
     Station& GetS3() { return s3; }
     Station& GetS4() { return s4; }
     Station& GetS5() { return s5; }
+
+    // Performance results
+    float thrust;
+    float netThrust;
+    float tsfc;
+    float fuelFlow;
+    float specificImpulse;
+    float exitVelocity;
+    float exitPressure;
+    float exitTemperature;
+    float exitMach;
+    float massFlow;
+    float density;
+    float speedOfSound;
 
 private:
     Station s0;

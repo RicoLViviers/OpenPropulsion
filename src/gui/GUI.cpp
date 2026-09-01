@@ -103,8 +103,8 @@ void GUI::Draw()
         // Dock each window into its node
         ImGui::DockBuilderDockWindow("Sidebar", left);
         ImGui::DockBuilderDockWindow("Viewport", centreTop);
-        ImGui::DockBuilderDockWindow("Results", centreBottom);
-        ImGui::DockBuilderDockWindow("Analysis", right);
+        ImGui::DockBuilderDockWindow("Results", right);
+        ImGui::DockBuilderDockWindow("Analysis", centreBottom);
 
         ImGui::DockBuilderFinish(dockspace_id);
     }
@@ -173,6 +173,15 @@ void GUI::DrawSidebar()
         ImGuiWindowFlags_NoCollapse
     );
 
+    ImGui::InputInt("Altitude", &m_simulation.altitude, 100, 10000);    
+    ImGui::InputFloat("Mach", &m_simulation.mach, 0.0, 5.0); 
+    ImGui::SliderInt("Throttle", &m_simulation.throttle, 0, 100);
+
+    if (ImGui::Button("Run Simulation", ImVec2(-1, 0)))
+    {
+        m_simulation.Run();
+    }
+
     ImGui::End();
 }
 
@@ -198,6 +207,19 @@ void GUI::DrawResults()
     );
 
     // Draw your results content here
+
+    ImGui::Text("Thrust: %.2f N", m_simulation.thrust);
+    ImGui::Text("Net Thrust: %.2f N", m_simulation.netThrust);
+    ImGui::Text("TSFC: %.10f kg/N/s", m_simulation.tsfc);
+    ImGui::Text("Fuel Flow: %.2f kg/s", m_simulation.fuelFlow);
+    ImGui::Text("Specific Impulse: %.2f s", m_simulation.specificImpulse);
+    ImGui::Text("Exit Velocity: %.2f m/s", m_simulation.exitVelocity);
+    ImGui::Text("Exit Pressure: %.2f kPa", m_simulation.exitPressure);
+    ImGui::Text("Exit Temperature: %.2f K", m_simulation.exitTemperature);
+    ImGui::Text("Exit Mach: %.2f", m_simulation.exitMach);
+    ImGui::Text("Mass Flow: %.2f kg/s", m_simulation.massFlow);
+    ImGui::Text("Density: %.2f kg/m³", m_simulation.density);
+    ImGui::Text("Speed of Sound: %.2f m/s", m_simulation.speedOfSound);
 
     ImGui::End();
 }

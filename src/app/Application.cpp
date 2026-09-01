@@ -8,7 +8,7 @@
 
 #include <GLFW/glfw3.h>
 
-Application::Application()
+Application::Application() : m_simulation(0, 0.0, 0.0)
 {
 }
 

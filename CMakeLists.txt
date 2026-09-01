@@ -41,6 +41,7 @@ set(SOURCES
     src/app/Application.cpp
     src/gui/GUI.cpp
     src/simulation/Simulation.cpp
+    src/performance/Performance.cpp
 
     # Dear ImGui
     external/imgui/imgui.cpp
