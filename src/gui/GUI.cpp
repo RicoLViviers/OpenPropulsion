@@ -5,6 +5,8 @@
 #include "imgui_internal.h"
 #include "implot.h"
 
+#include <vector>
+
 GUI::GUI(Simulation& simulation) : m_simulation(simulation)
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -93,7 +95,7 @@ void GUI::Draw()
         ImGui::DockBuilderSplitNode(
             centre,
             ImGuiDir_Down,
-            0.30f,
+            0.48f,
             &centreBottom,
             &centreTop
         );
@@ -183,6 +185,7 @@ void GUI::DrawSidebar()
     if (ImGui::Button("Run Simulation", ImVec2(-1, 0)))
     {
         m_simulation.Run();
+        RunThrustAnalysis();
     }
 
     ImGui::End();
@@ -229,33 +232,71 @@ void GUI::DrawResults()
 
 void GUI::DrawAnalysis()
 {
+    ImGui::SetNextWindowSize(ImVec2(400, 600), ImGuiCond_FirstUseEver);
     ImGui::Begin(
         "Analysis",
         nullptr,
         ImGuiWindowFlags_NoCollapse
     );
 
-    // Draw your analysis content here
-    float x[] = {0, 1, 2, 3, 4};
-    float temperature[] = {
-        288.15f,
-        288.15f,
-        582.0f,
-        1400.0f,
-        900.0f
-    };
-
-    if (ImPlot::BeginPlot("Temperature"))
+    if (ImGui::BeginTabBar("AnalysisTabs"))
     {
-        ImPlot::PlotLine(
-            "Temperature",
-            x,
-            temperature,
-            5
-        );
+        if (ImGui::BeginTabItem("Thrust Analysis"))
+        {
+            DrawThrustAnalysis();
+            ImGui::EndTabItem();
+        }
 
-        ImPlot::EndPlot();
+        if (ImGui::BeginTabItem("Other Analysis"))
+        {
+            // Draw other analysis content here
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
     }
 
     ImGui::End();
+}
+
+void GUI::RunThrustAnalysis()
+{
+    m_altitudes.clear();
+    m_thrusts.clear();
+
+    for (int altitude = 0; altitude <= 20000; altitude += 1000)
+    {
+        Simulation simulation(
+            altitude,
+            m_simulation.mach,
+            m_simulation.throttle
+        );
+
+        simulation.Run();
+
+        m_altitudes.push_back(static_cast<float>(altitude));
+        m_thrusts.push_back(simulation.thrust);
+    }
+}
+void GUI::DrawThrustAnalysis()
+{
+    if (ImPlot::BeginPlot("Thrust vs Altitude", ImVec2(-1, -1)))
+    {
+        ImPlot::SetupAxes(
+            "Altitude (m)",
+            "Thrust (N)"
+        );
+
+        if (!m_altitudes.empty())
+        {
+            ImPlot::PlotLine(
+                "Thrust",
+                m_altitudes.data(),
+                m_thrusts.data(),
+                static_cast<int>(m_altitudes.size())
+            );
+        }
+
+        ImPlot::EndPlot();
+    }
 }

@@ -46,11 +46,7 @@ void Simulation::Run()
 
     nozzle.solve(s4, s5);
 
-    exitVelocity = performance.CalculateExitVelocity(
-        s4.temperature,
-        s5.temperature,
-        Constants::Cp
-    );
+    exitVelocity = s5.velocity;
 
     thrust = performance.CalculateThrust(
         s5.massFlow,
@@ -108,7 +104,17 @@ void Simulation::Run()
     );
 
 
+    std::cout << "Exit velocity: "
+          << exitVelocity << " m/s\n";
 
+    std::cout << "Exit pressure: "
+            << s5.pressure << " kPa\n";
+
+    std::cout << "Ambient pressure: "
+            << atmosphere.P << " kPa\n";
+
+    std::cout << "Exit temperature: "
+            << s5.temperature << " K\n";
 
 }
 

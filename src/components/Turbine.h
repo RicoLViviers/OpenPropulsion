@@ -21,17 +21,21 @@ public:
         Station& outlet) override
     {
 
-        float ideal_temp_drop =
+        
+
+       
+
+        float actual_temp_drop =
+            turbine_efficiency *
             compressor_power /
             (inlet.massFlow * Constants::Cp);
+
+        float ideal_temp_drop =
+            actual_temp_drop / turbine_efficiency;
 
         float ideal_outlet_temperature =
             inlet.temperature -
             ideal_temp_drop;
-
-        float actual_temp_drop =
-            compressor_power /
-            (inlet.massFlow * Constants::Cp);
 
         outlet.temperature =
             inlet.temperature -

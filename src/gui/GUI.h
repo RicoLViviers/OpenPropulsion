@@ -1,6 +1,8 @@
 #pragma once
 #include "imgui.h"
 #include "./simulation/Simulation.h"
+#include <vector>
+
 class Simulation;
 class GUI
 {
@@ -22,11 +24,16 @@ private:
         Results
     };
 
+    std::vector<float> m_altitudes;
+    std::vector<float> m_thrusts;
+
     void DrawMenuBar();
     void DrawSidebar();
     void DrawViewport();
     void DrawResults();
     void DrawAnalysis();
+    void DrawThrustAnalysis();
+    void RunThrustAnalysis();
 
     ImFont* m_interRegular = nullptr;
     ImFont* m_interMedium = nullptr;
