@@ -1,14 +1,14 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use pyo3::prelude::*;
+
+#[pyfunction]
+fn hello_world(name: String) -> PyResult<String> {
+    println!("Hello from the Rust backend!");
+    let greeting = format!("Hello, {}! This message was built in Rust", name);
+    Ok(greeting)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[pymodule]
+fn open_propulsion(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(hello_world, m)?)?;
+    Ok(())
 }
