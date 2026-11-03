@@ -1,0 +1,10 @@
+[package]
+name = "open_propulsion"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pyo3 = "0.30.1"
+
+[features]
+extension-module = ["pyo3/extension-module"]
