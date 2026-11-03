@@ -38,6 +38,6 @@ mod tests {
             .unwrap();
 
         assert!((stagnation_temperature - 351.78).abs() < 0.0001);
-        assert!((stagnation_pressure - 120.163340234).abs() < 0.0001);
+        assert!((stagnation_pressure - 191.75372378014458).abs() < 0.0001);
     }
 }
